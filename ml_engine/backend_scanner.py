@@ -54,6 +54,13 @@ RISK_WORDS = {
     "credential", "transfer", "payment", "reset", "access", "compliance", "policy", "admin"
 }
 
+# 419 SCAM & BEC DETECTION
+SCAM_WORDS = ["widow", "cancer", "sick bed", "late husband", "divine", "god bless", "fund", "charity", "barrister", "compensation", "inheritance", "beneficiary", "diplomat"]
+BEC_TRIGGERS = ["wire transfer", "process a payment", "outstanding payment", "swift", "acquisition"]
+FEE_SCAM_TRIGGERS = ["processing fee", "customs charge", "customs fee", "unpaid"]
+SUSPICIOUS_TLDS = ['.xyz', '.top', '.club', '.info', '.br', '.ru', '.tk', '.ml']
+HYPE_WORDS = ["bonus", "limited-time", "offer ends", "hurry", "prize", "winner", "casino"]
+
 INTENT_TRIGGERS = {
     "Account Security Lure": ["resume access", "account suspended", "account locked", "unauthorized login", "action required", "account restricted", "access limited", "account limited", "subscription is on hold", "payment declined", "prevent account closure", "under investigation", "scan the qr", "scan qr", "re-authenticate", "2fa expired", "access will be lost", "new device", "secure your account"],
     "Identity Verification": ["confirm identity", "verify activity", "security check", "verify your account", "upload id", "proof of address", "submit otp", "send full name", "otp is", "verification code"],
@@ -183,6 +190,62 @@ def check_context(text):
         flags.append("Legal Disclaimer")
     return context_score, list(set(flags))
 
+def check_sender_spoofing(sender):
+    """Check for homoglyph attacks and algorithmic domains in sender."""
+    warnings = []
+    if not sender or "@" not in sender:
+        return warnings
+    
+    try:
+        sender_domain = sender.split('@')[1].lower()
+        
+        # Check for suspicious TLDs
+        for tld in SUSPICIOUS_TLDS:
+            if sender_domain.endswith(tld):
+                warnings.append(f"Suspicious TLD detected: '{sender_domain}'")
+                return warnings, True
+        
+        # Check for homoglyph: 'rn' instead of 'm'
+        if 'rn' in sender_domain:
+            safe_rn = ["corn", "internal", "journal", "modern", "internet"]
+            if not any(s in sender_domain for s in safe_rn):
+                warnings.append(f"HOMOGLYPH SPOOF: Detected 'rn' (fake 'm') in '{sender_domain}'")
+                return warnings, True
+        
+        # Check for high digit count (algorithmic domain)
+        digit_count = sum(c.isdigit() for c in sender_domain)
+        if digit_count > 3:
+            warnings.append(f"Algorithmic domain detected in sender: too many digits")
+            return warnings, True
+            
+    except:
+        pass
+    
+    return warnings, False
+
+def detect_419_scam(text_norm):
+    """Detect classic 419 advance-fee fraud patterns."""
+    scam_count = sum(1 for word in SCAM_WORDS if word in text_norm)
+    has_money = "million" in text_norm or "usd" in text_norm or "php" in text_norm or re.search(r'[₱$]\s?[\d,]{3,}', text_norm)
+    
+    if has_money and scam_count >= 1:
+        return True, "419 SCAM: High-value promise + classic scam triggers"
+    return False, ""
+
+def detect_bec_fraud(text_norm):
+    """Detect Business Email Compromise patterns."""
+    bec_count = sum(1 for trigger in BEC_TRIGGERS if trigger in text_norm)
+    if bec_count >= 1:
+        return True, "BEC/CEO FRAUD: Urgent executive payment request"
+    return False, ""
+
+def detect_fee_scam(text_norm):
+    """Detect advance-fee scam patterns (customs fees, processing fees, etc)."""
+    fee_count = sum(1 for trigger in FEE_SCAM_TRIGGERS if trigger in text_norm)
+    if fee_count >= 1:
+        return True, "FEE SCAM: Request for upfront fees/unpaid charges"
+    return False, ""
+
 # --- 7. MAIN LOGIC (REGEX & WHITELIST FIX) ---
 def scan_logic(body, sender=None):
     if not sender or sender.strip() == "": sender = "Unknown_Sender"
@@ -200,7 +263,7 @@ def scan_logic(body, sender=None):
     # --- 1. ROBUST LINK EXTRACTION (FIXED) ---
     # New regex avoids splitting URLs. Captures https://... or www.... or domain.com
     # Non-capturing groups (?:) ensure re.findall returns full strings, not tuples.
-    raw_links = re.findall(r'(?:https?://|www\.)\S+|[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+\.\S+', body)
+    raw_links = re.findall(r'(?:https?://|www\.)\S+|[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\b', body)
     
     links = []
     for l in raw_links:
@@ -255,13 +318,51 @@ def scan_logic(body, sender=None):
         probability = max(probability, 0.95)
         final_veto = True
 
-    # B. Link Analysis
+    # B. Sender Spoofing Check (Homoglyph, Suspicious TLDs)
+    if not is_ocr and sender_domain:
+        spoof_warnings, is_spoofed = check_sender_spoofing(sender)
+        if spoof_warnings:
+            warnings_list.extend(spoof_warnings)
+            if is_spoofed:
+                probability = max(probability, 0.95)
+                final_veto = True
+
+    # C. 419 Scam Detection (High-value + triggers)
+    is_419, msg_419 = detect_419_scam(text_norm)
+    if is_419:
+        warnings_list.append(f"🎭 {msg_419}")
+        probability = max(probability, 0.90)
+        final_veto = True
+
+    # D. BEC Fraud Detection
+    is_bec, msg_bec = detect_bec_fraud(text_norm)
+    if is_bec and "Legal Disclaimer" not in str(context_flags):
+        warnings_list.append(f"👔 {msg_bec}")
+        probability = max(probability, 0.85)
+        final_veto = True
+
+    # E. Fee Scam Detection
+    is_fee, msg_fee = detect_fee_scam(text_norm)
+    if is_fee:
+        warnings_list.append(f"💸 {msg_fee}")
+        probability = max(probability, 0.88)
+        final_veto = True
+
+    # F. Link Analysis
     if links:
         for link in links:
             # Check against whitelist using Subdomain Logic
             if is_domain_trusted(link, trusted_domains):
                 safe_indicators.append(f"Official Link: {link}")
                 continue 
+
+            # Check for suspicious TLDs in links
+            for tld in SUSPICIOUS_TLDS:
+                if link.endswith(tld):
+                    warnings_list.append(f"Suspicious TLD in link: '{link}'")
+                    probability = max(probability, 0.80)
+                    final_veto = True
+                    break
 
             # DGA Check
             if calculate_entropy(link) > 3.8:
@@ -270,11 +371,21 @@ def scan_logic(body, sender=None):
                 final_veto = True
             
             # Mismatch Logic
-            # In OCR/Text mode, Unknown sender = Mismatch for ANY non-whitelisted link
+            # FIXED: Skip mismatch check for whitelisted domains
+            if is_domain_trusted(link, trusted_domains):
+                continue  # Already marked as safe above
+                
             is_related = False
             if sender_domain and link:
                 if sender_domain == link: is_related = True
                 if "google" in sender_domain and "google" in link: is_related = True
+
+            if is_ocr: is_related = False 
+
+            if not is_related and "suspect" not in str(sender_domain):
+                warnings_list.append(f"Mismatch: Sender '{sender}' != Link '{link}'.")
+                probability = max(probability, 0.85)
+                final_veto = True
             
             if is_ocr: is_related = False 
             
@@ -283,7 +394,7 @@ def scan_logic(body, sender=None):
                 probability = max(probability, 0.85)
                 final_veto = True 
 
-    # C. Intent Detection
+    # G. Intent Detection
     found_intents = []
     for label, keywords in INTENT_TRIGGERS.items():
         if any(k in text_norm for k in keywords): found_intents.append(label)
@@ -299,7 +410,13 @@ def scan_logic(body, sender=None):
             warnings_list.append(f"Suspicious Context: {', '.join(found_intents)}.")
             probability += (len(found_intents) * 0.15)
 
-    # D. Brand Impersonation (With Brand Alibi)
+    # H. Hype/Marketing Detection
+    hype_count = sum(1 for word in HYPE_WORDS if word in text_norm)
+    if hype_count >= 2:
+        warnings_list.append("Marketing hype detected (spam indicators)")
+        probability += 0.05
+
+    # I. Brand Impersonation (With Brand Alibi)
     for brand in PROTECTED_BRANDS:
         if brand in text_norm:
             # BRAND ALIBI: If text says "PayPal" and contains "paypal.com", it's fine.
@@ -319,6 +436,17 @@ def scan_logic(body, sender=None):
                 warnings_list.append(f"Brand Mention: '{brand}' found in non-official channel.")
                 probability += 0.10
 
+            # Brand Impersonation with Unknown Sender (HIGH RISK)
+            # If sender is Unknown/OCR but text mentions a protected brand with suspicious links
+            if is_ocr:
+                has_brand = any(brand in text_norm for brand in PROTECTED_BRANDS)
+                has_bad_link = any(not is_domain_trusted(link, trusted_domains) for link in links) if links else False
+                
+                if has_brand and has_bad_link:
+                    warnings_list.append(f"HIGH RISK: Brand impersonation detected with suspicious sender source.")
+                    probability = max(probability, 0.85)
+                    final_veto = True
+
     # 5. FINAL SCORING
     probability += (context_score / 100)
     
@@ -329,9 +457,18 @@ def scan_logic(body, sender=None):
              probability = 0.10
              safe_indicators.append("Visual Analysis: Static Interface detected (No Threats).")
 
+    # Safety Check: Remove duplicates from warnings
+    warnings_list = list(set(warnings_list))
+    
     # VETO ENFORCEMENT
     if final_veto: 
-        probability = max(probability, 0.90) 
+        probability = max(probability, 0.90)
+    
+    # Sanitization logs add minor risk
+    if sanitization_logs:
+        for log in sanitization_logs:
+            if "Obfuscation" in log and not ("Developer" in str(context_flags)):
+                probability += 0.10
 
     risk_score = int(min(probability * 100, 100))
     is_phishing = (probability >= 0.75)

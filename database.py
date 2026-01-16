@@ -11,20 +11,17 @@ def log_scan(scan_type, result, sender, content, user_id):
     Saves a scan result to the 'history' table in Supabase.
     """
     try:
-        # 1. Format the string to match your database screenshot
-        # Example output: "Score: 90% - Risk Score: 90%"
         details_string = f"Score: {result['confidence']}% - Risk Score: {result['confidence']}%"
 
         data = {
             "user_id": user_id,
-            "scan_type": scan_type,
-            "sender": sender,
+            "history_name": sender,  # or you could use a descriptive name
             "content": content,
-            "verdict": result['label'],
+            "content_type": scan_type,  # 'text', 'url', or 'image'
+            "result": result['label'],  # 'safe', 'caution', or 'unsafe'
             "result_details": details_string
         }
 
-        # Targeting the 'history' table
         supabase.table('history').insert(data).execute()
         print("Scan logged to history.")
     except Exception as e:

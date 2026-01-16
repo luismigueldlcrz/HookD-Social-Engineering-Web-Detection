@@ -34,7 +34,7 @@
         "noreply@norton.com", "billing@norton.com",
         "info@mcafee.com", "support@mcafee.com",
         "noreply@avast.com", "orders@avast.com",
-        "info@kaspersky.com"
+        "info@kaspersky.com", "TryHackMe", "HackTheBox", "Coursera", "Udemy", "Edx", "PluralSight"
     ],
     "trusted_domains": [
         "bdo.com.ph", "bpi.com.ph", "metrobank.com.ph", "landbank.com", "rcbc.com", "eastwestbanker.com", "pnb.com.ph", "unionbankph.com", "securitybank.com", "cimbbank.com.ph", "psbank.com.ph", "robinsonsbank.com.ph",
@@ -65,6 +65,6 @@
         "pinterest.com", "snapchat.com", "reddit.com", "tumblr.com",
         "norton.com", "mcafee.com", "avast.com", "kaspersky.com", "bitdefender.com",
         "gov.ph", "deped.gov.ph", "doh.gov.ph", "dole.gov.ph", "dswd.gov.ph", "dti.gov.ph", "dfa.gov.ph", "ched.gov.ph", "prc.gov.ph", "dost.gov.ph", "dilg.gov.ph", "dpwh.gov.ph",
-        "bsp.gov.ph", "bir.gov.ph", "sss.gov.ph", "pagibigfund.gov.ph", "philhealth.gov.ph", "lto.gov.ph", "psa.gov.ph", "nbi.gov.ph"
+        "bsp.gov.ph", "bir.gov.ph", "sss.gov.ph", "pagibigfund.gov.ph","tryhackme.com", "hackthebox.com", "hackthebox.eu", "coursera.org", "udemy.com", "edx.org", "pluralsight.com", "philhealth.gov.ph", "lto.gov.ph", "psa.gov.ph", "nbi.gov.ph"
     ]
 }
