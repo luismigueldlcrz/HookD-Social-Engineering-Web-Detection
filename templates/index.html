@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astra | Phishing Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="astra-dark">
+
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top pt-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+                <span class="logo-icon me-2"></span> Astra
+            </a>
+            
+            <div class="collapse navbar-collapse justify-content-center">
+                <ul class="navbar-nav gap-4">
+                    <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                </ul>
+            </div>
+
+            <div class="d-flex gap-3 align-items-center">
+                <a href="{{ url_for('login') }}" class="btn btn-login-ghost px-4">Login</a>
+                <a href="{{ url_for('signup') }}" class="btn btn-primary-astra rounded-pill px-4">Sign up</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="snap-container">
+        <section class="snap-section hero-bg-radial d-flex align-items-center justify-content-center text-center">
+            <div class="container text-white">
+                <div class="glow-badge d-inline-block mb-4"></div>
+                <h1 class="display-1 fw-bold mb-4">Eliminating the Friction<br>of Cyber Threats</h1>
+                <p class="lead opacity-75 mb-5 mx-auto" style="max-width: 800px;">
+                    We leverage advanced Natural Language Processing and Machine Learning to identify phishing patterns in real-time, protecting your digital workspace from social engineering.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button class="btn btn-outline-light rounded-pill btn-lg px-5 btn-glass">Learn More ></button>
+                    <a href="{{ url_for('login') }}" class="btn btn-primary-astra rounded-pill btn-lg px-5 d-flex align-items-center justify-content-center">Get Started</a>
+                </div>
+                <div class="scroll-arrow mt-5 opacity-50">
+                    <i data-lucide="chevron-down"></i>
+                </div>
+            </div>
+        </section>
+        
+        <section class="snap-section stats-bg-dual d-flex align-items-center justify-content-center text-center">
+            <div class="container">
+                <h2 class="stat-title mb-5">The scale of phishing</h2>
+                </div>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

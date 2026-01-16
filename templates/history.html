@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>History | Astra</title>
+    <style>
+        /* --- ASTRA THEME VARIABLES --- */
+        :root {
+            --astra-green: #bef264;
+            --bg-body: #020402;
+            --bg-card: #0a0a0a;
+            --bg-card-hover: #111111;
+            --border-subtle: #1f2937;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0 40px;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0;
+            margin-bottom: 40px;
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .brand-icon {
+            width: 20px;
+            height: 20px;
+            background-color: var(--astra-green);
+            border-radius: 4px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--astra-green); }
+
+        /* --- TITLE SECTION --- */
+        .page-header {
+            margin-bottom: 50px;
+        }
+        .page-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* --- GRID LAYOUT --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            padding-bottom: 60px;
+        }
+
+        /* --- HISTORY CARD (Smoothened Edges) --- */
+        .history-card {
+            background-color: var(--bg-card);
+            border: 1px solid #222;
+            border-radius: 24px; /* Requested Smoothened Radius */
+            padding: 30px;
+            transition: transform 0.3s ease, border-color 0.3s ease, background-color 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 280px;
+        }
+
+        .history-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--astra-green);
+            background-color: var(--bg-card-hover);
+        }
+
+        /* Card Header */
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .scan-type {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 5px 12px;
+            border-radius: 50px;
+            background: #222;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .scan-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Main Info */
+        .sender-info {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .scan-content {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        /* Footer / Verdict */
+        .card-footer {
+            padding-top: 20px;
+            border-top: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .verdict-badge {
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-safe { color: var(--astra-green); }
+        .status-danger { color: #ef4444; }
+        .status-warning { color: #f59e0b; }
+
+        .confidence-val {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 80px 0;
+            grid-column: 1 / -1;
+        }
+        .btn-start {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--astra-green);
+            border: 1px solid var(--astra-green);
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .btn-start:hover { background: var(--astra-green); color: black; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="{{ url_for('dashboard') }}" class="brand">
+            <span class="brand-icon"></span>
+            Astra
+        </a>
+        
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}">Scanner</a>
+            <a href="{{ url_for('about') }}">About</a>
+            {% if session.get('user') %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="page-header">
+        <div class="page-title">Scan History</div>
+        <div class="page-subtitle">
+            Recent analysis logs associated with <strong>{{ user.name }}</strong>.
+        </div>
+    </div>
+
+    <div class="grid-container">
+        
+        {% if logs %}
+            {% for log in logs %}
+            <div class="history-card">
+                
+                <div class="card-top">
+                    <span class="scan-type">{{ log.scan_type }}</span>
+                    <span class="scan-date">{{ log.created_at[:10] }}</span>
+                </div>
+
+                <div>
+                    <div class="sender-info" title="{{ log.sender }}">
+                        {{ log.sender }}
+                    </div>
+                    <div class="scan-content" title="{{ log.content }}">
+                        {{ log.content }}
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="verdict-badge">
+                        {% if log.verdict == 'Phishing' %}
+                            <span class="status-danger">● Phishing</span>
+                        {% elif log.verdict == 'Suspicious' %}
+                            <span class="status-warning">● Suspicious</span>
+                        {% else %}
+                            <span class="status-safe">● Safe</span>
+                        {% endif %}
+                    </div>
+                    <div class="confidence-val">
+                        {{ log.result_details.split('-')[0] if '-' in log.result_details else log.result_details }}
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+        
+        {% else %}
+            <div class="empty-state">
+                <h2>No scans found</h2>
+                <p>Start analyzing emails or URLs to build your history.</p>
+                <a href="{{ url_for('dashboard') }}" class="btn-start">Go to Scanner</a>
+            </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

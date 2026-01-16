@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astra Phishing Scanner</title>
+    <style>
+        /* --- RESET & VARIABLES --- */
+        * { box-sizing: border-box; }
+        :root {
+            --astra-green: #bef264;
+            --bg-body: #020402;
+            --bg-card: #0a0a0a;
+            --border-subtle: #1f2937;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0 40px;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0;
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .brand-icon {
+            width: 20px;
+            height: 20px;
+            background-color: var(--astra-green);
+            border-radius: 4px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--astra-green); }
+
+        .user-pill {
+            border: 1px solid var(--text-muted);
+            padding: 8px 24px;
+            border-radius: 50px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .user-pill:hover { border-color: var(--astra-green); color: var(--astra-green); }
+
+        h1 {
+            font-size: 4rem;
+            margin: 20px 0 40px 0;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        /* --- FLASH MESSAGES --- */
+        .welcome-banner {
+            background-color: #dcfce7;
+            color: #14532d;
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+        .welcome-banner.danger { background-color: #fee2e2; color: #991b1b; }
+
+        /* --- TABS --- */
+        .tabs-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 0;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid #2d352d;
+            color: var(--astra-green);
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .tab-btn.active {
+            background-color: var(--astra-green);
+            color: black;
+            border-color: var(--astra-green);
+        }
+
+        /* --- MAIN SCANNER INTERFACE --- */
+        .scanner-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background-color: var(--bg-card);
+            border: 1px solid #222;
+            border-radius: 16px;
+            overflow: hidden;
+            min-height: 500px;
+            margin-bottom: 50px;
+        }
+
+        /* LEFT PANEL: INPUT */
+        .input-area {
+            padding: 40px;
+            background-color: black;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border-right: 1px solid #222;
+        }
+
+        .input-form {
+            display: none;
+            height: 100%;
+            flex-direction: column;
+        }
+        .input-form.active { display: flex; }
+
+        textarea, input[type="text"] {
+            background: transparent;
+            border: none;
+            color: #e5e5e5;
+            font-size: 1.5rem;
+            width: 100%;
+            height: 100%;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+        }
+        
+        textarea::placeholder, input::placeholder { color: #525252; }
+
+        .action-bar {
+            margin-top: auto;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 15px;
+            padding-top: 20px;
+        }
+
+        .btn-scan {
+            background: transparent;
+            border: 1px solid var(--text-main);
+            color: var(--text-main);
+            padding: 10px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+        
+        .btn-scan:hover {
+            background-color: var(--astra-green);
+            color: black;
+            border-color: var(--astra-green);
+        }
+
+        /* RIGHT PANEL: RESULTS */
+        .result-area {
+            padding: 40px;
+            background-color: #0c0c0c;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-title {
+            color: var(--astra-green);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+        }
+
+        .metric-group { margin-bottom: 30px; }
+        .metric-label {
+            color: #525252;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .metric-value {
+            font-size: 1.2rem;
+            color: white;
+            font-weight: 500;
+        }
+
+        .val-phishing { color: #ef4444; }
+        .val-safe { color: var(--astra-green); }
+        .val-suspicious { color: #f59e0b; }
+
+        .placeholder-state {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+        .scan-icon-large {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            border: 3px dashed #333;
+            border-radius: 10px;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-drop {
+            border: 2px dashed #333;
+            border-radius: 12px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #666;
+            cursor: pointer;
+        }
+        input[type="file"] { display: none; }
+        .file-label-btn {
+            background: #222;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 10px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="{{ url_for('dashboard') }}" class="brand">
+            <span class="brand-icon"></span>
+            Astra
+        </a>
+        
+        <div class="nav-links">
+            <a href="{{ url_for('history') }}">History</a>
+            <a href="{{ url_for('about') }}">About</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+
+        <a href="{{ url_for('profile') }}" class="user-pill">{{ user.name if user else 'User' }}</a>
+    </header>
+
+    <h1>Phishing Scanner</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="welcome-banner {{ category }}">
+             {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="tabs-wrapper">
+        <button class="tab-btn {{ 'active' if mode == 'text' }}" onclick="switchTab('text')">Text Scanner</button>
+        <button class="tab-btn {{ 'active' if mode == 'url' }}" onclick="switchTab('url')">Link Scanner</button>
+        <button class="tab-btn {{ 'active' if mode == 'image' }}" onclick="switchTab('image')">Image Scanner</button>
+    </div>
+
+    <div class="scanner-container">
+        
+        <div class="input-area">
+            
+            <form id="form-text" class="input-form {{ 'active' if mode == 'text' }}" action="/scan/text" method="POST">
+                <textarea name="text_content" placeholder="Insert Text Here..." required>{{ request.form.text_content if mode == 'text' }}</textarea>
+                <div class="action-bar">
+                    <button type="submit" class="btn-scan">SCAN</button>
+                </div>
+            </form>
+
+            <form id="form-url" class="input-form {{ 'active' if mode == 'url' }}" action="/scan/url" method="POST">
+                <textarea name="url_content" placeholder="Paste URL here..." required style="height: 100%;">{{ request.form.url_content if mode == 'url' }}</textarea>
+                <div class="action-bar">
+                    <button type="submit" class="btn-scan">SCAN</button>
+                </div>
+            </form>
+
+            <form id="form-image" class="input-form {{ 'active' if mode == 'image' }}" action="/scan/image" method="POST" enctype="multipart/form-data">
+                <label class="file-drop">
+                    <span>Click to Upload Screenshot</span>
+                    <span class="file-label-btn">Choose File</span>
+                    <input type="file" name="file_upload" accept=".png,.jpg,.jpeg" onchange="this.previousElementSibling.innerText = this.files[0].name">
+                </label>
+                {% if extracted_text and mode == 'image' %}
+                <div style="margin-top: 10px; font-size: 0.8rem; color: #555;">OCR Loaded.</div>
+                {% endif %}
+                <div class="action-bar">
+                    <button type="submit" class="btn-scan">SCAN</button>
+                </div>
+            </form>
+
+        </div>
+
+        <div class="result-area">
+            
+            {% if result %}
+                <div class="result-title">Scan Results</div>
+
+                <div class="metric-group">
+                    <div class="metric-label">PREDICTION</div>
+                    <div class="metric-value">
+                        {% if result.label == 'Phishing' %}
+                            <span class="val-phishing">PHISHING DETECTED</span>
+                        {% elif result.label == 'Suspicious' %}
+                            <span class="val-suspicious">SUSPICIOUS</span>
+                        {% else %}
+                            <span class="val-safe">SAFE</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="metric-group">
+                    <div class="metric-label">CONFIDENCE</div>
+                    <div class="metric-value">{{ result.confidence }}%</div>
+                </div>
+
+                <div class="metric-group">
+                    <div class="metric-label">ANALYSIS</div>
+                    <ul style="padding-left: 20px; color: #aaa; margin-top: 5px;">
+                        {% for detail in result.details %}
+                            <li style="margin-bottom: 5px;">{{ detail }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <div class="placeholder-state">
+                    <div class="scan-icon-large">⛶</div>
+                    <div style="font-weight: 600; color: #444;">Ready to Scan</div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <script>
+        function switchTab(mode) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.input-form').forEach(form => form.classList.remove('active'));
+
+            const tabs = document.querySelectorAll('.tab-btn');
+            if(mode === 'text') tabs[0].classList.add('active');
+            if(mode === 'url') tabs[1].classList.add('active');
+            if(mode === 'image') tabs[2].classList.add('active');
+
+            document.getElementById('form-' + mode).classList.add('active');
+        }
+    </script>
+
+</body>
+</html>

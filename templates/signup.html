@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Astra</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth-style.css') }}">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-sidebar">
+            <h1><span>Hello</span> there!</h1>
+            <p class="lorem-text">LOREM IPSUM</p>
+        </div>
+        
+        <div class="auth-content">
+             {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div style="padding: 10px; margin-bottom: 20px; border-radius: 8px; background: rgba(255,255,255,0.1); color: white;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('signup') }}">
+                <div class="input-row">
+                    <input type="text" name="first_name" class="auth-input" placeholder="First Name" required>
+                    <input type="text" name="last_name" class="auth-input" placeholder="Last Name" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="email" name="email" class="auth-input" placeholder="Email Address" required>
+                </div>
+
+                <div class="form-group">
+                    <input type="password" name="password" class="auth-input" id="main-pass" placeholder="Password" required>
+                    <i data-lucide="eye-off" class="password-toggle"></i>
+                </div>
+
+                <div class="form-group">
+                    <input type="password" class="auth-input" id="confirm-pass" placeholder="Re-type Password" required>
+                    <i data-lucide="eye-off" class="password-toggle"></i>
+                </div>
+
+                <ul class="pw-requirements">
+                    <li id="req-length">Use at least 8 characters</li>
+                    <li id="req-case">Include uppercase and lowercase letters</li>
+                    <li id="req-number">Add at least one number</li>
+                    <li id="req-special">Add at least one special character (@$!%*?&#)</li>
+                    <li id="req-match">Passwords must match</li>
+                </ul>
+
+                <button type="submit" class="btn-auth">Sign up</button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account? <a href="{{ url_for('login') }}">Log in</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        lucide.createIcons();
+        const mainPass = document.getElementById('main-pass');
+        const confirmPass = document.getElementById('confirm-pass');
+        
+        const reqs = {
+            length: document.getElementById('req-length'),
+            case: document.getElementById('req-case'),
+            number: document.getElementById('req-number'),
+            special: document.getElementById('req-special'),
+            match: document.getElementById('req-match')
+        };
+
+        function validate() {
+            const val = mainPass.value;
+            const conf = confirmPass.value;
+
+            reqs.length.classList.toggle('met', val.length >= 8);
+            reqs.case.classList.toggle('met', /[a-z]/.test(val) && /[A-Z]/.test(val));
+            reqs.number.classList.toggle('met', /\d/.test(val));
+            reqs.special.classList.toggle('met', /[@$!%*?&#]/.test(val));
+            
+            const match = (val === conf && val !== "");
+            reqs.match.classList.toggle('met', match);
+        }
+
+        mainPass.addEventListener('input', validate);
+        confirmPass.addEventListener('input', validate);
+
+        document.querySelector('.auth-wrapper').addEventListener('click', function(e) {
+            const toggle = e.target.closest('.password-toggle');
+            if (toggle) {
+                const isHidden = mainPass.type === 'password';
+                const nextType = isHidden ? 'text' : 'password';
+                const nextIcon = isHidden ? 'eye' : 'eye-off';
+
+                mainPass.type = nextType;
+                confirmPass.type = nextType;
+
+                document.querySelectorAll('.password-toggle').forEach(icon => {
+                    icon.setAttribute('data-lucide', nextIcon);
+                });
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>

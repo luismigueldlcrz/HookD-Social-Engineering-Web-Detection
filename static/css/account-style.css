@@ -1,0 +1,117 @@
+:root {
+    --astra-green: #c1ff72;
+    --bg-dark: #020d08;
+    --bg-glow: #061a10;
+    --card-bg: #080808;
+}
+
+body {
+    background: radial-gradient(circle at 50% 10%, var(--bg-glow) 0%, var(--bg-dark) 60%);
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    color: white;
+    margin: 0;
+}
+
+.section-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1.5px;
+    font-weight: 600;
+}
+
+/* --- Profile Card Layout --- */
+.profile-card {
+    background-color: var(--card-bg);
+    border: 1px solid rgba(193, 255, 114, 0.3);
+    border-radius: 25px;
+    width: 100%;
+    max-width: 650px;
+    padding: 60px 40px 40px 40px;
+    margin-top: 100px;
+    margin-bottom: 50px;
+}
+
+.avatar-container {
+    position: absolute;
+    top: -75px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 3px solid var(--astra-green);
+    object-fit: cover;
+    box-shadow: 0 0 30px rgba(193, 255, 114, 0.15);
+}
+
+/* --- Typography & Icons --- */
+.profile-heading {
+    color: var(--astra-green);
+    font-weight: 800;
+    font-size: 2.8rem;
+}
+
+.edit-icon {
+    width: 24px;
+    color: white;
+    margin-left: 10px;
+    vertical-align: middle;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.edit-icon.active-icon {
+    color: var(--astra-green);
+    transform: scale(1.1);
+}
+
+/* --- Form Elements --- */
+.form-subheader {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.input-label {
+    display: block;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 8px;
+    margin-left: 5px;
+}
+
+.account-input {
+    background-color: #121212 !important;
+    border: 1px solid rgba(193, 255, 114, 0.1) !important;
+    color: white !important;
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-size: 0.95rem;
+    transition: 0.3s ease;
+}
+
+/* State when field is editable */
+.account-input:not([readonly]) {
+    border: 1px solid var(--astra-green) !important;
+    background-color: #1a1a1a !important;
+}
+
+/* Styling for the Save Button */
+.btn-save {
+    background: var(--astra-green);
+    border: 1px solid var(--astra-green);
+    color: black;
+    border-radius: 50px;
+    padding: 12px;
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+.btn-save:hover {
+    background-color: #a8e65a;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(193, 255, 114, 0.4);
+}
