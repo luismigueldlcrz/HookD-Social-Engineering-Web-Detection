@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scanner | Astra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="scanner-style.css">
+</head>
+<body class="scanner-bg">
+
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top pt-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="index.html">
+                <div class="logo-icon me-2" style="width:20px; height:20px; background:var(--astra-green); border-radius:4px;"></div> Astra
+            </a>
+            <div class="collapse navbar-collapse justify-content-center">
+                <ul class="navbar-nav gap-4">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                </ul>
+            </div>
+            <div class="profile-pill">
+                <img src="user-avatar.jpg" alt="Profile" class="profile-avatar me-2">
+                <span class="profile-name" style="font-size:0.85rem;">Juana Miguel</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-5 pt-5">
+        <h1 class="display-3 fw-bold mb-4 mt-5">Phishing Scanner</h1>
+
+        <ul class="nav nav-tabs scanner-nav-tabs border-0" id="scannerTab" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#text-pane" type="button">Text Scanner</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#link-pane" type="button">Link Scanner</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#image-pane" type="button">Image Scanner</button>
+            </li>
+        </ul>
+
+        <div class="scanner-main-wrap">
+            <div class="scanner-left-box tab-content" id="scannerTabContent">
+                
+                <div class="tab-pane fade show active" id="text-pane" role="tabpanel">
+                    <textarea class="scanner-field" placeholder="Insert Text Here"></textarea>
+                    <div class="d-flex justify-content-end align-items-center p-4 gap-4">
+                        <i data-lucide="trash-2" class="icon-action"></i>
+                        <button class="btn btn-scan rounded-pill px-5">SCAN</button>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="link-pane" role="tabpanel">
+                    <textarea class="scanner-field" placeholder="Enter URL to scan..."></textarea>
+                    <div class="d-flex justify-content-end align-items-center p-4 gap-4">
+                        <i data-lucide="trash-2" class="icon-action"></i>
+                        <button class="btn btn-scan rounded-pill px-5">SCAN</button>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="image-pane" role="tabpanel">
+                    <div class="upload-frame">
+                        <div class="upload-icon-no-border mb-3">
+                            <i data-lucide="image-up" width="140" height="140" stroke-width="1.2" color=var(--astra-green)></i>
+                        </div>
+                        <button class="btn btn-upload rounded-pill px-5 mb-2" onclick="document.getElementById('fileInput').click()">Upload</button>
+                        <input type="file" id="fileInput" style="display: none;" accept=".jpg,.png">
+                        <p class="small opacity-50">Accepted formats: .jpg, .png</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="scanner-right-glass"></div>
+        </div>
+
+        <div class="disclaimer-bar">
+            This detection engine provides probabilistic results based on trained patterns; it should be used as a supplementary defense rather than a definitive security guarantee.
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

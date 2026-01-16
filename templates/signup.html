@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Astra</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="auth-style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-sidebar">
+            <h1><span>Hello</span> there!</h1>
+            <p class="lorem-text">LOREM IPSUM</p>
+        </div>
+        
+        <div class="auth-content">
+            <div class="input-row">
+                <input type="text" class="auth-input" placeholder="First Name">
+                <input type="text" class="auth-input" placeholder="Last Name">
+            </div>
+            
+            <div class="form-group">
+                <input type="email" class="auth-input" placeholder="Email Address">
+            </div>
+
+            <div class="form-group">
+                <input type="password" class="auth-input" id="main-pass" placeholder="Password">
+                <i data-lucide="eye-off" class="password-toggle"></i>
+            </div>
+
+            <div class="form-group">
+                <input type="password" class="auth-input" id="confirm-pass" placeholder="Re-type Password">
+                <i data-lucide="eye-off" class="password-toggle"></i>
+            </div>
+
+            <ul class="pw-requirements">
+                <li id="req-length">Use at least 8 characters</li>
+                <li id="req-case">Include uppercase and lowercase letters</li>
+                <li id="req-number">Add at least one number</li>
+                <li id="req-special">Add at least one special character (@$!%*?&#)</li>
+                <li id="req-match">Passwords must match</li>
+            </ul>
+
+            <button class="btn-auth">Sign up</button>
+
+            <div class="auth-footer">
+                Already have an account? <a href="login.html">Log in</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Initial Icon Load
+        lucide.createIcons();
+
+        // 2. DOM Elements for Validation
+        const mainPass = document.getElementById('main-pass');
+        const confirmPass = document.getElementById('confirm-pass');
+        
+        const reqs = {
+            length: document.getElementById('req-length'),
+            case: document.getElementById('req-case'),
+            number: document.getElementById('req-number'),
+            special: document.getElementById('req-special'),
+            match: document.getElementById('req-match')
+        };
+
+        // 3. Responsive Validation Logic (Regex)
+        function validate() {
+            const val = mainPass.value;
+            const conf = confirmPass.value;
+
+            // Check rules against the first password input
+            reqs.length.classList.toggle('met', val.length >= 8);
+            reqs.case.classList.toggle('met', /[a-z]/.test(val) && /[A-Z]/.test(val));
+            reqs.number.classList.toggle('met', /\d/.test(val));
+            reqs.special.classList.toggle('met', /[@$!%*?&#]/.test(val));
+            
+            // Match logic (only green if fields match and are not empty)
+            const match = (val === conf && val !== "");
+            reqs.match.classList.toggle('met', match);
+        }
+
+        mainPass.addEventListener('input', validate);
+        confirmPass.addEventListener('input', validate);
+
+        // 4. FIXED: Synchronized Password Reveal (Event Delegation)
+        document.querySelector('.auth-wrapper').addEventListener('click', function(e) {
+            const toggle = e.target.closest('.password-toggle');
+            
+            if (toggle) {
+                // Determine new state based on current type of the main input
+                const isHidden = mainPass.type === 'password';
+                const nextType = isHidden ? 'text' : 'password';
+                const nextIcon = isHidden ? 'eye' : 'eye-off';
+
+                // Sync both inputs
+                mainPass.type = nextType;
+                confirmPass.type = nextType;
+
+                // Sync both icons
+                document.querySelectorAll('.password-toggle').forEach(icon => {
+                    icon.setAttribute('data-lucide', nextIcon);
+                });
+
+                // Re-initialize Lucide to show the eye/eye-off swap
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>

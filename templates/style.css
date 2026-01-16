@@ -1,0 +1,174 @@
+/* --- Global Variables --- */
+:root {
+    --astra-green: #c1ff72;
+    --bg-dark: #020d08;
+    --bg-glow: #0a2d1a;
+    --card-bg: rgba(255, 255, 255, 0.03);
+}
+
+/* --- Layout & Snap-Scrolling --- */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden; /* Locks body to container-only scroll */
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+}
+
+.snap-container {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory; /* Creates the full-page snap effect */
+}
+
+.snap-section {
+    height: 100vh;
+    width: 100%;
+    scroll-snap-align: start;
+    position: relative;
+    padding: 80px 20px;
+}
+
+/* --- Section Backgrounds --- */
+
+/* Page 1: Single Center Radial for Hero Section */
+.hero-bg-radial {
+    background: radial-gradient(circle at center, var(--bg-glow) 0%, var(--bg-dark) 80%);
+}
+
+/* Page 2: Dual Radial for Statistics Section */
+.stats-bg-dual {
+    background: 
+        radial-gradient(circle at 15% 85%, var(--bg-glow) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, var(--bg-glow) 0%, var(--bg-dark) 45%);
+}
+
+/* --- Typography --- */
+.display-1 {
+    font-size: clamp(3.5rem, 8vw, 5.5rem); /* Responsive scaling */
+    letter-spacing: -3px;
+    line-height: 1.1;
+}
+
+.text-green { 
+    color: var(--astra-green); 
+}
+
+.stat-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--astra-green);
+    text-shadow: 0 0 30px rgba(193, 255, 114, 0.4);
+    letter-spacing: -1px;
+}
+
+/* --- Navigation & Auth Buttons --- */
+.navbar {
+    background: transparent;
+    z-index: 1000;
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.nav-link:hover {
+    color: var(--astra-green) !important;
+}
+
+/* Login Ghost Button */
+.btn-login-ghost {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    color: white !important;
+    font-weight: 500;
+    transition: 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-login-ghost:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Primary Astra Button (Sign Up / Get Started) */
+a.btn-primary-astra, .btn-primary-astra {
+    background-color: var(--astra-green);
+    color: #000 !important;
+    font-weight: 600;
+    border: none;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+.btn-primary-astra:hover {
+    background-color: #a8e65a;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(193, 255, 114, 0.4);
+}
+
+.btn-glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* --- Statistics Cards --- */
+.stat-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 40px 20px;
+    backdrop-filter: blur(10px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.stat-card:hover {
+    transform: translateY(-15px) scale(1.05);
+    border-color: var(--astra-green);
+    box-shadow: 0 15px 40px rgba(193, 255, 114, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.icon-green {
+    color: var(--astra-green);
+    width: 36px;
+    height: 36px;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover .icon-green {
+    transform: scale(1.2) rotate(-10deg);
+}
+
+/* --- Branding & Decorative --- */
+.logo-icon {
+    width: 22px;
+    height: 22px;
+    background-color: var(--astra-green);
+    display: inline-block;
+    border-radius: 4px;
+}
+
+.glow-badge {
+    width: 130px;
+    height: 30px;
+    border: 1px solid rgba(193, 255, 114, 0.4);
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(193, 255, 114, 0.2);
+}
+
+/* --- Animations --- */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+}
+
+.scroll-arrow {
+    animation: bounce 2s infinite;
+}

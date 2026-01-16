@@ -1,0 +1,198 @@
+/* --- Variables & Base --- */
+:root {
+    --astra-green: #c1ff72;
+    --bg-dark: #020d08;
+    --bg-glow: #061a10;
+    --input-bg: rgba(255, 255, 255, 0.05);
+    --input-border: rgba(193, 255, 114, 0.2);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--bg-dark);
+    font-family: 'Inter', sans-serif;
+}
+
+/* --- Full Page Layout --- */
+.auth-wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    background: #080808;
+}
+
+/* Sidebar with Signature Radial Glow */
+.auth-sidebar {
+    flex: 1;
+    background: radial-gradient(circle at 0% 50%, var(--bg-glow) 0%, var(--bg-dark) 75%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10%;
+}
+
+.auth-sidebar h1 {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.1;
+    color: white;
+}
+
+.auth-sidebar h1 span {
+    color: var(--astra-green);
+}
+
+.lorem-text {
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    opacity: 0.6;
+    margin-top: 20px;
+    font-weight: 600;
+    color: white;
+}
+
+/* Form Area */
+.auth-content {
+    flex: 1;
+    padding: 0 10%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+    width: 100%;
+}
+
+.input-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.auth-input {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    padding: 18px;
+    color: white;
+    font-size: 1.1rem;
+    outline: none;
+    transition: 0.3s ease;
+}
+
+.auth-input:focus {
+    border-color: var(--astra-green);
+    background: rgba(193, 255, 114, 0.1);
+}
+
+/* Password Toggle Styling */
+.password-toggle {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    opacity: 0.6;
+    width: 20px;
+    height: 20px;
+    color: var(--astra-green) !important;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+/* --- Responsive Validation Styling --- */
+.pw-requirements {
+    list-style: none;
+    padding: 0;
+    margin: 25px 0;
+    font-size: 0.9rem;
+    color: white;
+}
+
+.pw-requirements li {
+    transition: all 0.3s ease;
+    opacity: 0.4; /* Dimmed when not met */
+    margin-bottom: 8px;
+}
+
+.pw-requirements li::before {
+    content: "• ";
+    color: var(--astra-green);
+    margin-right: 10px;
+}
+
+/* Success state (Requirement Met) */
+.pw-requirements li.met {
+    opacity: 1;
+    color: var(--astra-green);
+    font-weight: 600;
+}
+
+.pw-requirements li.met::before {
+    content: "✓ "; /* Bullet changes to Checkmark when met */
+}
+
+/* --- Buttons & Footer --- */
+.btn-auth {
+    background-color: var(--astra-green);
+    color: #000;
+    font-weight: 700;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    padding: 18px;
+    width: 100%;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-auth:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(193, 255, 114, 0.3);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 1rem;
+    opacity: 0.8;
+    color: white;
+}
+
+.auth-footer a {
+    color: var(--astra-green);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.forgot-pw-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end; /* Aligns link to the right edge of the inputs */
+    margin-top: -5px;          /* Pulls it slightly closer to the password field */
+    margin-bottom: 35px;       /* Adds breathing room before the Login button */
+}
+
+.forgot-pw {
+    color: rgba(255, 255, 255, 0.4) !important; /* Force light gray even if visited */
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.forgot-pw:hover {
+    color: var(--astra-green) !important; /* Change to Astra Green on hover */
+}
