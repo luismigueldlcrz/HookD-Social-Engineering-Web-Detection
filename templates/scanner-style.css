@@ -4,7 +4,11 @@
     --bg-dark: #020d08;
     --bg-glow: #061a10;
     --card-bg: #080808;
-    --glass-fill: rgba(255, 255, 255, 0.03);
+    
+    /* Status Colors */
+    --status-safe: #2ecc71;
+    --status-caution: #f1c40f;
+    --status-unsafe: #e74c3c;
 }
 
 body {
@@ -16,127 +20,150 @@ body {
 }
 
 /* --- Navigation & Profile --- */
-.navbar-collapse { flex-grow: 0; }
-
+.navbar-collapse { 
+    flex-grow: 0; 
+}
 .profile-pill {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.05); 
     border: 1px solid rgba(193, 255, 114, 0.4);
-    border-radius: 50px;
-    padding: 5px 15px 5px 5px;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
+    border-radius: 50px; 
+    padding: 5px 15px 5px 5px; 
+    display: flex; 
+    align-items: center; 
+    cursor: pointer; 
     transition: 0.3s ease;
 }
-
-.profile-avatar {
-    width: 32px; height: 32px;
+.profile-pill:hover { 
+    background: rgba(193, 255, 114, 0.1); 
+    transform: translateY(-2px);
+}
+.profile-avatar { 
+    width: 32px; 
+    height: 32px;
     border-radius: 50%;
     border: 1px solid var(--astra-green);
     object-fit: cover;
 }
+.logo-icon { 
+    width: 20px; height: 20px; background-color: var(--astra-green); border-radius: 4px; }
 
-/* --- Layout Structure (Structural Outlines) --- */
+/* --- Layout Structure --- */
 .scanner-main-wrap {
     background-color: var(--card-bg);
     border: 1px solid rgba(193, 255, 114, 0.3); 
     border-radius: 0 25px 25px 25px;
     height: 520px;
     display: flex; 
+    align-items: stretch;
     overflow: hidden;
     width: 100%;
 }
-
-.scanner-left-box {
-    flex: 1.5;
-    display: flex;
-    flex-direction: column;
-}
-
+.scanner-left-box { flex: 1.5; display: flex; flex-direction: column; height: 100%; }
 .scanner-right-glass {
     flex: 1;
     background: linear-gradient(to bottom right, rgba(193, 255, 114, 0.05), transparent);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
     border-left: 1px solid rgba(193, 255, 114, 0.2);
-}
-
-/* --- Tab Navigation (Astra Green Selection) --- */
-.scanner-nav-tabs .nav-link {
-    color: var(--astra-green);
-    background: transparent;
-    border: 1px solid rgba(193, 255, 114, 0.3) !important;
-    border-bottom: none !important;
-    border-radius: 12px 12px 0 0;
-    padding: 12px 30px;
-    margin-right: 5px;
-    font-weight: 600;
-}
-
-.scanner-nav-tabs .nav-link.active {
-    background: var(--astra-green) !important;
-    color: #000 !important;
-}
-
-/* --- IMAGE SCANNER (Arrow-Icon Design & Sizing) --- */
-.upload-frame {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     height: 100%;
 }
 
-/* --- Field & Button Positioning --- */
-.tab-pane.active {
-    display: flex !important;
-    flex-direction: column;
-    height: 100%;
-}
-
+/* --- Tabs & Content --- */
+.tab-pane.active { display: flex !important; flex-direction: column; height: 100%; flex: 1; }
 .scanner-field {
-    background: transparent !important;
-    border: none !important;
-    color: white !important;
-    font-size: 1.3rem;
-    padding: 40px;
-    width: 100%;
-    flex-grow: 1; 
-    resize: none;
-    outline: none;
-    word-break: break-all;
-    line-height: 1.4;
+    background: transparent !important; border: none !important;
+    color: white !important; font-size: 1.6rem; padding: 40px;
+    width: 100%; flex-grow: 1; resize: none; outline: none; word-break: break-all;
 }
+.scanner-nav-tabs .nav-link {
+    color: var(--astra-green); background: transparent;
+    border: 1px solid rgba(193, 255, 114, 0.3) !important; border-bottom: none !important; border-radius: 12px 12px 0 0;
+    padding: 12px 30px; margin-right: 5px; font-weight: 600;
+}
+.scanner-nav-tabs .nav-link.active { background: var(--astra-green) !important; color: #000 !important; }
 
+/* --- Buttons --- */
 .btn-scan, .btn-upload {
-    border: 1px solid var(--astra-green) !important;
-    color: white !important;
-    background: transparent;
-    font-weight: 700;
-    transition: 0.3s;
+    border: 1px solid var(--astra-green) !important; color: white !important;
+    background: transparent; font-weight: 700; transition: 0.3s;
 }
+.btn-scan:hover, .btn-upload:hover { background: var(--astra-green) !important; color: #000 !important; }
+.upload-frame { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+.upload-icon-no-border { margin-bottom: 20px; display: flex; align-items: center; justify-content: center; }
 
-.btn-scan:hover, .btn-upload:hover {
-    background: var(--astra-green) !important;
-    color: #000 !important;
-}
-
-.icon-action {
-    color: white; 
-    cursor: pointer; 
-    opacity: 0.5; 
-    transition: 0.3s;
-    width: 22px;
-}
-
-/* --- Footer --- */
+/* --- Disclaimer Bar (Fixed Style) --- */
 .disclaimer-bar {
     background-color: var(--astra-green);
     color: #000;
     padding: 12px 25px;
     border-radius: 50px;
     font-size: 0.8rem;
-    font-weight: 500;
+    font-weight: 600;
     text-align: center;
-    margin-top: 25px;
 }
+
+/* --- Status & Modal --- */
+.status-wrapper {
+    text-align: center; padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;
+    width: 100%;
+}
+.status-icon-circle {
+    width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 15px auto;
+    display: flex; align-items: center; justify-content: center;
+    border: 4px solid currentColor; box-shadow: 0 0 30px currentColor;
+    background: rgba(0,0,0,0.3); color: inherit;
+}
+.status-icon-circle svg { width: 45px; height: 45px; stroke-width: 4px; }
+.status-label {
+    font-size: 2.2rem; font-weight: 900; letter-spacing: 1px;
+    text-transform: uppercase; text-shadow: 0 0 15px currentColor; margin-bottom: 5px;
+}
+.confidence-text { font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; display: block; }
+.status-progress-bg { height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin: 0 40px; }
+.status-progress-bar { height: 100%; width: 100%; border-radius: 10px; box-shadow: 0 0 10px currentColor; background-color: currentColor; }
+.state-safe { color: var(--status-safe); }
+.state-caution { color: var(--status-caution); }
+.state-unsafe { color: var(--status-unsafe); }
+
+/* --- History Cards --- */
+.history-card {
+    background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px; cursor: pointer; transition: all 0.3s ease; height: 100%;
+}
+.history-card:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(193, 255, 114, 0.3); transform: translateY(-5px); }
+.history-title { font-weight: 700; color: var(--astra-green); }
+.status-text { font-weight: 700; font-size: 0.9rem; }
+.history-preview { font-size: 0.85rem; color: rgba(255, 255, 255, 0.6); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Modal */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px);
+    z-index: 2000; display: flex; justify-content: center; align-items: center;
+}
+.modal-glass-panel {
+    width: 90%; max-width: 500px;
+    background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(5, 5, 5, 0.98));
+    border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 25px; padding: 40px; position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: fadeIn 0.3s ease;
+}
+.close-modal-btn { position: absolute; top: 20px; right: 20px; background: transparent; border: none; color: white; opacity: 0.6; cursor: pointer; }
+.text-astra-green { color: var(--astra-green) !important; }
+
+/* Title & Edit */
+.modal-scan-title { border-bottom: 1px solid transparent; transition: 0.3s; outline: none; }
+.modal-scan-title.editing-active { 
+    border-bottom: 1px solid white !important; 
+    background: rgba(255,255,255,0.05); 
+    padding: 0 5px; 
+}
+.edit-trigger-icon { opacity: 0.5; cursor: pointer; transition: 0.3s; width: 16px; height: 16px; }
+.edit-trigger-icon:hover { opacity: 1; color: var(--astra-green); }
+
+.full-text-scroll {
+    max-height: 200px; overflow-y: auto; padding-right: 10px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); line-height: 1.6;
+}
+.full-text-scroll::-webkit-scrollbar { width: 6px; }
+.full-text-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
