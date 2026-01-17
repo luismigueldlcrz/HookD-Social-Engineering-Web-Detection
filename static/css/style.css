@@ -1,3 +1,4 @@
+/* --- Global Variables --- */
 :root {
     --astra-green: #c1ff72;
     --bg-dark: #020d08;
@@ -10,7 +11,7 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    overflow: hidden; /* Locks body to container-only scroll */
+    /* overflow: hidden;  <-- REMOVED to allow smooth scrolling to work properly */
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-dark);
 }
@@ -19,6 +20,7 @@ html, body {
     height: 100vh;
     overflow-y: scroll;
     scroll-snap-type: y mandatory; /* Creates the full-page snap effect */
+    scroll-behavior: smooth;
 }
 
 .snap-section {

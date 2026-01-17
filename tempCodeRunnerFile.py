@@ -9,8 +9,6 @@ from supabase import Client
 from ml_engine.backend_scanner import scan_logic 
 from utils.ocr import run_ocr
 from utils.security_filter import check_file_extension
-from utils.email_parser import parse_eml_file, check_header_spoofing, extract_sender_domain
-from utils.dns_verifier import verify_email_authenticity, analyze_sender_domain
 
 # UPDATED IMPORTS: Added get_scan_history
 from database import log_scan, create_user_profile, get_user_profile, get_scan_history
@@ -42,9 +40,11 @@ def login_required(f):
 # --- ROUTES ---
 
 @app.route('/')
-def index():
-    # FIXED: Renders the Landing Page (index.html)
-    return render_template('index.html')
+def home():
+    # Redirect to dashboard if logged in, else login
+    if 'user' in session:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -100,14 +100,15 @@ def logout():
 def dashboard():
     return render_template('scanner.html', user=session['user'], mode='text')
 
-# --- HISTORY ROUTE ---
+# --- NEW HISTORY ROUTE ---
 @app.route('/history')
 @login_required
 def history():
+    # Fetches from the 'history' table via database.py
     logs = get_scan_history(session['user']['id'])
     return render_template('history.html', user=session['user'], logs=logs)
 
-# --- PROFILE ROUTE ---
+# --- NEW PROFILE ROUTE ---
 @app.route('/profile')
 @login_required
 def profile():
@@ -133,20 +134,19 @@ def profile():
 def about():
     return render_template('about.html', user=session.get('user'))
 
-# --- SCANNING ROUTES (Unchanged) ---
+# --- SCANNING ROUTES ---
 
 @app.route('/scan/text', methods=['POST'])
 @login_required
 def scan_text():
     text = request.form.get('text_content', '').strip()
-    sender = request.form.get('sender_info', 'Unknown').strip()
     if not text:
         flash("Please enter text.", "warning")
         return redirect(url_for('dashboard'))
 
-    result = scan_logic(body=text, sender=sender if sender else "Unknown")
-    # Original logic preserved
-    log_scan("text", result, sender=sender if sender else "Unknown", content=text, user_id=session['user']['id'])
+    result = scan_logic(body=text, sender="Unknown")
+    # Logs to 'history' table via database.py
+    log_scan("text", result, sender="Unknown", content=text, user_id=session['user']['id'])
     
     return render_template('scanner.html', result=result, mode='text', user=session['user'])
 
@@ -181,15 +181,8 @@ def scan_image():
     extracted_text = run_ocr(filepath)
     
     if extracted_text and extracted_text.strip():
-        detected_sender = "Image_OCR"
-        
-        email_match = re.search(r'([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})', extracted_text, re.IGNORECASE)
-        if email_match:
-            detected_sender = email_match.group(1)
-        else:
-            brand_match = re.search(r'(?:From|Sender|Company):\s*([A-Za-z\s]+)', extracted_text, re.IGNORECASE)
-            if brand_match:
-                detected_sender = brand_match.group(1).strip()
+        match = re.search(r'(?:From|Sender):?\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})', extracted_text, re.IGNORECASE)
+        detected_sender = match.group(1) if match else "Image_OCR"
 
         result = scan_logic(body=extracted_text, sender=detected_sender)
         log_scan("image", result, sender=detected_sender, content=extracted_text, user_id=session['user']['id'])
