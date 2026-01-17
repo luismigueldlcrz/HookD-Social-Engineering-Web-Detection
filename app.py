@@ -13,7 +13,7 @@ from utils.email_parser import parse_eml_file, check_header_spoofing, extract_se
 from utils.dns_verifier import verify_email_authenticity, analyze_sender_domain
 
 # DATABASE IMPORTS
-from database import log_scan, create_user_profile, get_user_profile, get_scan_history
+from database import log_scan, create_user_profile, get_user_profile, get_scan_history, delete_scan_log
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -105,6 +105,17 @@ def history():
     logs = get_scan_history(session['user']['id'])
     return render_template('history.html', user=session['user'], logs=logs)
 
+# --- FIX: Changed <int:log_id> to <log_id> to handle UUID strings ---
+@app.route('/delete_log/<log_id>', methods=['POST'])
+@login_required
+def delete_log(log_id):
+    # This now accepts the UUID string (e.g., 'eabbf62e-...') correctly
+    if delete_scan_log(log_id, session['user']['id']):
+        flash("Log deleted.", "success")
+    else:
+        flash("Could not delete log.", "danger")
+    return redirect(url_for('history'))
+
 @app.route('/profile')
 @login_required
 def profile():
@@ -156,7 +167,6 @@ def scan_url():
         flash("Please enter a URL.", "warning")
         return redirect(url_for('dashboard'))
 
-    # FIX: Ensure URL has a schema (http/https) to prevent "unpacking" errors
     if not url.startswith(('http://', 'https://')):
         url = 'https://' + url
 
@@ -166,7 +176,6 @@ def scan_url():
         return render_template('scanner.html', result=result, mode='url', user=session['user'])
         
     except ValueError:
-        # This catches the specific "not enough values to unpack" error
         flash("Invalid URL format. Please enter a valid website link.", "danger")
         return redirect(url_for('dashboard'))
     except Exception as e:
