@@ -23,6 +23,10 @@ body.history-bg {
     overflow-x: hidden;
 }
 
+/* --- Helpers --- */
+.text-astra-green { color: var(--astra-green) !important; }
+.text-light-gray { color: rgba(255, 255, 255, 0.6) !important; }
+
 /* --- Navigation & Profile --- */
 .navbar-collapse { flex-grow: 0; }
 .logo-icon { width: 20px; height: 20px; background-color: var(--astra-green); border-radius: 4px; }
@@ -75,9 +79,7 @@ body.history-bg {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.dropdown-toggle::after {
-    display: none;
-}
+.dropdown-toggle::after { display: none; }
 
 /* --- History Cards --- */
 .history-card {
@@ -97,10 +99,6 @@ body.history-bg {
     color: rgba(255, 255, 255, 0.6); font-size: 0.95rem; line-height: 1.6;
     display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
 }
-
-/* --- Helpers --- */
-.text-astra-green { color: var(--astra-green) !important; }
-.text-light-gray { color: rgba(255, 255, 255, 0.6) !important; }
 
 /* --- Status Colors (Text) --- */
 .text-safe { color: var(--status-safe) !important; }
@@ -135,15 +133,27 @@ body.history-bg {
     padding-bottom: 20px;
 }
 
+/* --- UPDATED ICON STYLE (Solid Circle + Glow) --- */
 .status-icon-glow {
-    width: 60px; height: 60px; border-radius: 50%;
+    width: 80px; height: 80px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    background: currentColor; 
-    box-shadow: 0 0 20px currentColor; 
-    margin-bottom: 10px;
+    
+    /* Background matches status color (Red/Green/Yellow) */
+    background-color: currentColor; 
+    
+    /* Strong Glow */
+    box-shadow: 0 0 30px currentColor; 
+    
+    margin-bottom: 15px;
     color: inherit;
+    border: 3px solid rgba(255,255,255,0.2); 
 }
-.status-icon-glow i { color: black; }
+
+/* The icon inside is WHITE */
+.status-icon-glow svg { 
+    color: white; 
+    width: 40px; height: 40px;
+}
 
 .status-label {
     font-size: 2rem; font-weight: 900; letter-spacing: 1px;
@@ -155,13 +165,19 @@ body.history-bg {
 .status-separator-container {
     width: 100%; text-align: center; margin-top: 5px;
 }
-.confidence-text { font-size: 0.8rem; color: white; margin-bottom: 5px; display: block; }
+.confidence-text { font-size: 0.9rem; color: white; margin-bottom: 8px; display: block; font-weight: 600; }
+.status-progress-bg { height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin: 0 40px; }
 .status-bar-glow {
-    height: 6px; width: 60%; margin: 0 auto;
-    border-radius: 10px;
+    height: 100%; border-radius: 10px;
     background-color: currentColor; 
     box-shadow: 0 0 10px currentColor; 
 }
+
+/* --- Modal State Styles --- */
+/* These classes are applied to the wrapper to color everything inside */
+.state-safe { color: var(--status-safe); }
+.state-caution { color: var(--status-caution); }
+.state-unsafe { color: var(--status-unsafe); }
 
 /* --- Modal Body --- */
 .modal-body-left { text-align: left; padding-top: 10px; }

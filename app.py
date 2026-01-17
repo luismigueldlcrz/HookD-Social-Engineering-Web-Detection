@@ -12,7 +12,7 @@ from utils.security_filter import check_file_extension
 from utils.email_parser import parse_eml_file, check_header_spoofing, extract_sender_domain
 from utils.dns_verifier import verify_email_authenticity, analyze_sender_domain
 
-# UPDATED IMPORTS: Added get_scan_history
+# DATABASE IMPORTS
 from database import log_scan, create_user_profile, get_user_profile, get_scan_history
 
 app = Flask(__name__)
@@ -43,7 +43,6 @@ def login_required(f):
 
 @app.route('/')
 def index():
-    # FIXED: Renders the Landing Page (index.html)
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -100,14 +99,12 @@ def logout():
 def dashboard():
     return render_template('scanner.html', user=session['user'], mode='text')
 
-# --- HISTORY ROUTE ---
 @app.route('/history')
 @login_required
 def history():
     logs = get_scan_history(session['user']['id'])
     return render_template('history.html', user=session['user'], logs=logs)
 
-# --- PROFILE ROUTE ---
 @app.route('/profile')
 @login_required
 def profile():
@@ -128,12 +125,11 @@ def profile():
         flash(f"Error fetching profile: {e}", "danger")
         return redirect(url_for('dashboard'))
 
-# --- ABOUT ROUTE ---
 @app.route('/about')
 def about():
     return render_template('about.html', user=session.get('user'))
 
-# --- SCANNING ROUTES (Unchanged) ---
+# --- SCANNING ROUTES ---
 
 @app.route('/scan/text', methods=['POST'])
 @login_required
@@ -144,11 +140,13 @@ def scan_text():
         flash("Please enter text.", "warning")
         return redirect(url_for('dashboard'))
 
-    result = scan_logic(body=text, sender=sender if sender else "Unknown")
-    # Original logic preserved
-    log_scan("text", result, sender=sender if sender else "Unknown", content=text, user_id=session['user']['id'])
-    
-    return render_template('scanner.html', result=result, mode='text', user=session['user'])
+    try:
+        result = scan_logic(body=text, sender=sender if sender else "Unknown")
+        log_scan("text", result, sender=sender if sender else "Unknown", content=text, user_id=session['user']['id'])
+        return render_template('scanner.html', result=result, mode='text', user=session['user'])
+    except Exception as e:
+        flash(f"Scan failed: {str(e)}", "danger")
+        return redirect(url_for('dashboard'))
 
 @app.route('/scan/url', methods=['POST'])
 @login_required
@@ -158,10 +156,22 @@ def scan_url():
         flash("Please enter a URL.", "warning")
         return redirect(url_for('dashboard'))
 
-    result = scan_logic(body=url, sender=url)
-    log_scan("url", result, sender=url, content=url, user_id=session['user']['id'])
+    # FIX: Ensure URL has a schema (http/https) to prevent "unpacking" errors
+    if not url.startswith(('http://', 'https://')):
+        url = 'https://' + url
 
-    return render_template('scanner.html', result=result, mode='url', user=session['user'])
+    try:
+        result = scan_logic(body=url, sender=url)
+        log_scan("url", result, sender=url, content=url, user_id=session['user']['id'])
+        return render_template('scanner.html', result=result, mode='url', user=session['user'])
+        
+    except ValueError:
+        # This catches the specific "not enough values to unpack" error
+        flash("Invalid URL format. Please enter a valid website link.", "danger")
+        return redirect(url_for('dashboard'))
+    except Exception as e:
+        flash(f"An error occurred while scanning: {str(e)}", "danger")
+        return redirect(url_for('dashboard'))
 
 @app.route('/scan/image', methods=['POST'])
 @login_required
@@ -191,10 +201,13 @@ def scan_image():
             if brand_match:
                 detected_sender = brand_match.group(1).strip()
 
-        result = scan_logic(body=extracted_text, sender=detected_sender)
-        log_scan("image", result, sender=detected_sender, content=extracted_text, user_id=session['user']['id'])
-        
-        return render_template('scanner.html', result=result, extracted_text=extracted_text, mode='image', user=session['user'])
+        try:
+            result = scan_logic(body=extracted_text, sender=detected_sender)
+            log_scan("image", result, sender=detected_sender, content=extracted_text, user_id=session['user']['id'])
+            return render_template('scanner.html', result=result, extracted_text=extracted_text, mode='image', user=session['user'])
+        except Exception as e:
+            flash(f"Scan failed: {str(e)}", "danger")
+            return redirect(url_for('dashboard'))
     else:
         flash("No text extracted.", "warning")
         return redirect(url_for('dashboard'))
